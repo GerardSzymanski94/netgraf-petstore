@@ -28,6 +28,13 @@
                 </div>
             </div>
         @endif
+        @if(session('success'))
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <div class="bg-green-100 border border-grenn-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            </div>
+        @endif
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-6">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                     @yield('content')

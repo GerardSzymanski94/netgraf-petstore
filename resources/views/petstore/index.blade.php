@@ -49,9 +49,24 @@
                                 </td>
                             </tr>
                         @endforeach
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td class="px-6 py-4">
+                            <a href="{{ route('petstore.edit', ['id'=>session('pet')['id']]) }}" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Edit</a>
+                        </td>
+                        <td class="px-6 py-4">
+                             <form method="POST" action="{{ route('petstore.delete', ['id' => session('pet')['id']]) }}" onsubmit="return confirm('Are you sure')">
+                                @csrf
+                                @method('DELETE')
+
+                                <button class="bg-transparent hover:bg-red-700 text-white-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded" type="submit">Delete</button>
+                            </form>
+
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
+
         @endisset
 
     </div>
