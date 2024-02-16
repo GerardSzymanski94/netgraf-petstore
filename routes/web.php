@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Api\PetstoreApiController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('/', [PetstoreApiController::class, 'index'])->name('index');
+
+
+Route::group(['prefix' => 'petstore', 'as' => 'petstore.'], function () {
+    Route::post('/find', [PetstoreApiController::class, 'find'])->name('find');
+    });
