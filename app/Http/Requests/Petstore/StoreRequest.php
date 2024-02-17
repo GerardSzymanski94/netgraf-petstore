@@ -21,11 +21,10 @@ class StoreRequest extends FormRequest
     {
         return [
             'name' => ['required'],
-            'photos' => ['nullable','array'],
-            'photos.*' => ['string'],
+            'photosUrls' => ['nullable','string'],
             'category' => ['nullable', 'string'],
             'status' => ['nullable', new Enum(PetStatusEnum::class)],
-            'photo' => ['nullable', 'file'],
+            'photo' => ['nullable', 'file', 'image'],
             'tag' => ['nullable', 'array'],
             'tag.*' => ['string'],
             'additional_metadata' => ['nullable', 'string']

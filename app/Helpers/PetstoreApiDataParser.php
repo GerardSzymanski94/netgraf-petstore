@@ -15,18 +15,14 @@ class PetstoreApiDataParser {
                 'name' => $category[1]
             ];
         }
-        $result['photoUrls'] = [];
-        if(isset($data['photos'])){
-            foreach ($data['photos'] as $photo){
-                $result['photoUrls'][] = $photo;
-            }
+        if(isset($data['photoUrls'])){
+            $result['photoUrls'] = explode(',', $data['photoUrls']);
         }
         if(isset($data['tags'])){
-            foreach ($data['tags'] as $tag){
-                $explodeTag = explode('_', $tag);
+            foreach ($data['tags'] as $key=>$tag){
                 $result['tags'][] = [
-                    'id' => $explodeTag[0],
-                    'name' => $explodeTag[1]
+                    'id' => $key,
+                    'name' => $tag
                 ];
             }
         }

@@ -3,21 +3,24 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Petstore\FindByStatusRequest;
 use App\Http\Requests\Petstore\FindPetRequest;
 use App\Http\Requests\Petstore\StoreRequest;
 use App\Http\Requests\Petstore\UpdateRequest;
 use App\Services\PetstoreApi;
 use App\Helpers\PetstoreApiDataParser;
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 
 class PetstoreApiController extends Controller
 {
-    public function index(){
+    public function index(): View{
         return view('petstore.index');
     }
 
-    public function find(FindPetRequest $request){
+    public function find(FindPetRequest $request): RedirectResponse{
         try{
             $response = (new PetstoreApi())->findById($request->input('pet_id'));
         }catch(Exception $e){
@@ -35,10 +38,10 @@ class PetstoreApiController extends Controller
                     'errorCode' => $response->getStatusCode() ?? null,
                     'petId' => $request->input('pet_id')]);
         }
-        return redirect()->route('index')->with(['pet' => $response->json() ?? null]);
+        return redirect()->route('index')->with(['pets' => [$response->json() ?? null], 'petId' => $request->input('pet_id') ?? null]);
     }
 
-    public function edit($id){
+    public function edit($id): RedirectResponse|View{
 
         try{
             $response = (new PetstoreApi())->findById($id);
@@ -62,7 +65,7 @@ class PetstoreApiController extends Controller
         return view('petstore.edit')->with(['pet' => $response->json() ?? null]);
     }
 
-    public function update(UpdateRequest $request, $id){
+    public function update(UpdateRequest $request, $id): RedirectResponse{
 
         try{
             $data = PetstoreApiDataParser::requestToArray($request->all());
@@ -81,7 +84,6 @@ class PetstoreApiController extends Controller
                 ->with(['error' => $response->json()['message'] ?? 'Something went wrong!',
                     'errorCode' => $response->getStatusCode() ?? null]);
         }
-
 
         if($request->hasFile('photo')){
             try{
@@ -105,10 +107,10 @@ class PetstoreApiController extends Controller
         return redirect()->back()
             ->with(['success' => 'Pet has been successfully updated']);
     }
-    public function create(){
+    public function create(): View{
         return view('petstore.create');
     }
-    public function store(StoreRequest $request){
+    public function store(StoreRequest $request): RedirectResponse{
         try{
             $data = PetstoreApiDataParser::requestToArray($request->all());
             $response = (new PetstoreApi())->create($data);
@@ -149,13 +151,12 @@ class PetstoreApiController extends Controller
             }
         }
 
-
         return redirect()->route('index')
-            ->with(['success' => 'Pet has been successfully created']);
+            ->with(['success' => 'Pet has been successfully created', 'petId' => $petId]);
 
 
     }
-    public function delete($id){
+    public function delete($id): RedirectResponse{
         try{
             $response = (new PetstoreApi())->delete($id);
         }catch(Exception $e){
@@ -173,6 +174,27 @@ class PetstoreApiController extends Controller
         }
         return redirect()->route('index')
             ->with(['success' => 'Pet has been successfully deleted']);
+    }
+
+    public function findByStatus(FindByStatusRequest $request){
+        try{
+            $response = (new PetstoreApi())->findByStatus($request->input('status'));
+        }catch(Exception $e){
+            Log::error($e);
+            return redirect()->route('index')
+                ->with(['error' => 'Something went wrong!',
+                    'status' => $request->input('status')]);
+        }
+        if(!$response){
+            return redirect()->route('index')->with(['error' => 'Something went wrong!']);
+        }
+        if($response->getStatusCode() != 200){
+            return redirect()->route('index')
+                ->with(['error' => $response->json()['message'] ?? 'Something went wrong!',
+                    'errorCode' => $response->getStatusCode() ?? null,
+                    'status' => $request->input('status')]);
+        }
+        return redirect()->route('index')->with(['pets' => $response->json() ?? null, 'status' => $request->input('status') ?? null]);
     }
 
 }

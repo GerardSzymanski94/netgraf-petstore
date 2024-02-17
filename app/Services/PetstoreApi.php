@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 
@@ -9,24 +10,25 @@ class PetstoreApi {
 
     CONST BASE_URL = 'https://petstore.swagger.io/v2/pet/';
 
-    public function findById($id){
+    public function findById($id): Response
+    {
         return Http::get(self::BASE_URL.$id);
     }
 
-    public function update($data)
+    public function update($data): Response
     {
         $response = Http::put(self::BASE_URL, $data);
 
         return $response;
     }
 
-    public function create($data)
+    public function create($data): Response
     {
         $response = Http::post(self::BASE_URL, $data);
 
         return $response;
     }
-    public function delete($id)
+    public function delete($id): Response
     {
         $response = Http::delete(self::BASE_URL.$id);
 
@@ -34,7 +36,7 @@ class PetstoreApi {
     }
 
 
-    public function uploadPhoto($id, UploadedFile $file, $additionalMetadata = null)
+    public function uploadPhoto($id, UploadedFile $file, $additionalMetadata = null): Response
     {
         $response = Http::attach(
             'file',
@@ -46,5 +48,9 @@ class PetstoreApi {
         ]);
 
         return $response;
+    }
+
+    public function findByStatus($status): Response {
+        return Http::get(self::BASE_URL."findByStatus?status=$status");
     }
 }
